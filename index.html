@@ -15,8 +15,7 @@
     <section id="products">
       <h2>Available Toys</h2>
       <div id="product-list">
-        <!-- Products will be loaded here from Supabase later -->
-        <p class="placeholder">Product list will appear here once Supabase is connected.</p>
+        <p class="placeholder">Loading toys...</p>
       </div>
     </section>
 
@@ -37,7 +36,6 @@
           Which toy?<br>
           <select name="product" id="product-select" required>
             <option value="">Select a toy</option>
-            <!-- Options will be filled from Supabase later -->
           </select>
         </label>
         <br><br>
@@ -48,9 +46,10 @@
   </main>
 
   <footer>
-    <p>Admin dashboard will be added later with Supabase.</p>
+    <p>Orders are saved to Supabase.</p>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="app.js"></script>
 </body>
 </html>
