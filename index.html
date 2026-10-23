@@ -3,50 +3,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Toys</title>
+  <title>🎮 Fun Toys Shop</title>
   <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
   <header>
-    <h1>Toys</h1>
+    <h1>🎮 Fun Toys Shop 🧸</h1>
+    <p>Pick your favorite toy!</p>
   </header>
 
   <main>
     <section id="products">
-      <h2>Available Toys</h2>
+      <h2>🌟 Available Toys</h2>
       <div id="product-list">
         <p class="placeholder">Loading toys...</p>
       </div>
     </section>
 
     <section id="order">
-      <h2>Place an Order</h2>
+      <h2>📝 Place an Order</h2>
       <form id="order-form">
         <label>
-          Name<br>
-          <input type="text" name="name" required>
+          Your name<br>
+          <input type="text" name="name" placeholder="What should we call you?" required>
         </label>
-        <br><br>
+        <br>
         <label>
           Phone number<br>
-          <input type="tel" name="phone" required>
+          <input type="tel" name="phone" placeholder="So we can reach you" required>
         </label>
-        <br><br>
+        <br>
         <label>
-          Which toy?<br>
+          Which toy do you want?<br>
           <select name="product" id="product-select" required>
-            <option value="">Select a toy</option>
+            <option value="">Pick a toy</option>
           </select>
         </label>
-        <br><br>
-        <button type="submit">Submit Order</button>
+        <br>
+        <button type="submit">Order Now! 🚀</button>
       </form>
       <p id="order-message"></p>
     </section>
   </main>
 
   <footer>
-    <p>Orders are saved to Supabase.</p>
+    <p>Made with ❤️ for kids</p>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
