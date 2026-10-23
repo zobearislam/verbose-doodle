@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toys</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Toys</h1>
+  </header>
+
+  <main>
+    <section id="products">
+      <h2>Available Toys</h2>
+      <div id="product-list">
+        <!-- Products will be loaded here from Supabase later -->
+        <p class="placeholder">Product list will appear here once Supabase is connected.</p>
+      </div>
+    </section>
+
+    <section id="order">
+      <h2>Place an Order</h2>
+      <form id="order-form">
+        <label>
+          Name<br>
+          <input type="text" name="name" required>
+        </label>
+        <br><br>
+        <label>
+          Phone number<br>
+          <input type="tel" name="phone" required>
+        </label>
+        <br><br>
+        <label>
+          Which toy?<br>
+          <select name="product" id="product-select" required>
+            <option value="">Select a toy</option>
+            <!-- Options will be filled from Supabase later -->
+          </select>
+        </label>
+        <br><br>
+        <button type="submit">Submit Order</button>
+      </form>
+      <p id="order-message"></p>
+    </section>
+  </main>
+
+  <footer>
+    <p>Admin dashboard will be added later with Supabase.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
