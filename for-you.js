@@ -6,22 +6,29 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const forYouList = document.getElementById('for-you-list');
 
+const featuredProduct = {
+  id: 'featured-moto',
+  name: 'Red Ducati Monster Style Motorcycle Toy',
+  price: '$19.99',
+  description: 'Awesome red and black toy motorcycle with cool details! Perfect for racing and play.',
+  image_url: 'images/moto1.jpg'
+};
+
 async function loadForYou() {
-  const { data: products, error } = await supabase
-    .from('products')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .limit(3);
+  let products = [featuredProduct];
 
-  if (error) {
-    forYouList.innerHTML = '<p class="placeholder">Could not load toys.</p>';
-    console.error(error);
-    return;
-  }
+  try {
+    const { data: supabaseProducts, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(2);
 
-  if (!products || products.length === 0) {
-    forYouList.innerHTML = '<p class="placeholder">No toys yet. Add some in Supabase!</p>';
-    return;
+    if (!error && supabaseProducts && supabaseProducts.length > 0) {
+      products = products.concat(supabaseProducts);
+    }
+  } catch (e) {
+    console.log('Using featured product');
   }
 
   forYouList.innerHTML = products.map(product => `
