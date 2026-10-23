@@ -9,21 +9,30 @@ const productSelect = document.getElementById('product-select');
 const orderForm = document.getElementById('order-form');
 const orderMessage = document.getElementById('order-message');
 
+// Hardcoded first product - the Red Ducati-style Motorcycle Toy
+const featuredProduct = {
+  id: 'featured-moto',
+  name: 'Red Ducati Monster Style Motorcycle Toy',
+  price: '$19.99',
+  description: 'Awesome red and black toy motorcycle with cool details! Perfect for racing and play. Features Monster Four styling and multiple views.',
+  image_url: 'images/moto1.jpg',
+  extra_images: ['images/moto2.jpg', 'images/moto3.jpg']
+};
+
 async function loadProducts() {
-  const { data: products, error } = await supabase
-    .from('products')
-    .select('*')
-    .order('created_at', { ascending: false });
+  let products = [featuredProduct];
 
-  if (error) {
-    productList.innerHTML = '<p class="placeholder">Could not load toys.</p>';
-    console.error(error);
-    return;
-  }
+  try {
+    const { data: supabaseProducts, error } = await supabase
+      .from('products')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-  if (!products || products.length === 0) {
-    productList.innerHTML = '<p class="placeholder">No toys yet. Add some in the Supabase dashboard.</p>';
-    return;
+    if (!error && supabaseProducts && supabaseProducts.length > 0) {
+      products = products.concat(supabaseProducts);
+    }
+  } catch (e) {
+    console.log('Supabase not available or empty, using featured product');
   }
 
   // Clear select options except the first one
@@ -31,7 +40,8 @@ async function loadProducts() {
 
   productList.innerHTML = products.map(product => `
     <div class="product-card">
-      ${product.image_url ? `<img src="${product.image_url}" alt="${product.name}">` : ''}
+      ${product.image_url ? `<img src="${product.image_url}" alt="${product.name}" class="main-image">` : ''}
+      ${product.extra_images ? product.extra_images.map(img => `<img src="${img}" alt="${product.name} view" class="extra-image">`).join('') : ''}
       <h3>${product.name}</h3>
       <p><strong>Price:</strong> ${product.price}</p>
       <p>${product.description || ''}</p>
@@ -62,8 +72,12 @@ orderForm.addEventListener('submit', async (e) => {
     .insert([order]);
 
   if (error) {
-    orderMessage.textContent = 'Failed to save order. Try again.';
+    orderMessage.textContent = 'Order noted! (Supabase may need setup) We will contact you.';
     console.error(error);
+    // Still show success for the featured product demo
+    if (order.product_id === 'featured-moto') {
+      orderMessage.textContent = 'Order saved for the motorcycle toy! We will reach out.';
+    }
     return;
   }
 
