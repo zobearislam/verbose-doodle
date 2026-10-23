@@ -15,6 +15,30 @@ body {
   min-height: 100vh;
 }
 
+nav {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  background: white;
+  padding: 12px;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+nav a {
+  text-decoration: none;
+  color: #4aa3d8;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 10px;
+}
+
+nav a:hover {
+  background: #89cff0;
+  color: white;
+}
+
 header {
   text-align: center;
   background: #89cff0;
@@ -96,7 +120,7 @@ input:focus, select:focus {
   border-color: #58cc02;
 }
 
-button {
+button, .btn {
   background: #58cc02;
   color: white;
   border: none;
@@ -106,11 +130,29 @@ button {
   border-radius: 12px;
   cursor: pointer;
   margin-top: 8px;
+  text-decoration: none;
+  display: inline-block;
   transition: background 0.2s;
 }
 
-button:hover {
+button:hover, .btn:hover {
   background: #4caf00;
+}
+
+.btn.secondary {
+  background: #4aa3d8;
+}
+
+.btn.secondary:hover {
+  background: #3a8bc0;
+}
+
+.home-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
 }
 
 .placeholder {
