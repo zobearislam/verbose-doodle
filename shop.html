@@ -10,19 +10,22 @@
 <body>
   <nav>
     <a href="index.html">🏠 Home</a>
-    <a href="shop.html">🌟 Shop</a>
+    <a href="shop.html" class="active">🌟 Shop</a>
     <a href="for-you.html">💜 For You</a>
     <a href="owner.html">🔒 Owner</a>
   </nav>
 
   <header>
     <h1>🌟 Toy Shop</h1>
-    <p>Pick your favorite toy!</p>
+    <p>Pick your favorite toy and we’ll bring the fun to you!</p>
   </header>
 
   <main>
     <section id="products">
       <h2>Available Toys</h2>
+      <div class="filters" id="category-filters">
+        <button class="filter-btn active" data-cat="all">All Toys</button>
+      </div>
       <div id="product-list">
         <p class="placeholder">Loading toys...</p>
       </div>
@@ -32,37 +35,31 @@
       <h2>📝 Place an Order</h2>
       <form id="order-form">
         <label>
-          Your name<br>
+          Your name
           <input type="text" name="customer_name" placeholder="What should we call you?" required>
         </label>
-        <br>
         <label>
-          Phone number<br>
+          Phone number
           <input type="tel" name="customer_phone" placeholder="So we can reach you" required>
         </label>
-        <br>
         <label>
-          Delivery address<br>
+          Delivery address
           <input type="text" name="customer_address" placeholder="Where to deliver?" required>
         </label>
-        <br>
         <label>
-          Delivery note (optional)<br>
+          Delivery note (optional)
           <input type="text" name="delivery_note" placeholder="Any special instructions?">
         </label>
-        <br>
         <label>
-          Which toy do you want?<br>
+          Which toy do you want?
           <select name="product" id="product-select" required>
             <option value="">Pick a toy</option>
           </select>
         </label>
-        <br>
         <label>
-          Quantity<br>
+          Quantity
           <input type="number" name="quantity" value="1" min="1" required>
         </label>
-        <br>
         <button type="submit" id="submit-btn">Order Now! 🚀</button>
       </form>
       <p id="order-message"></p>

@@ -1,4 +1,4 @@
-// Supabase connection (anon key is public; RLS must protect data)
+// Supabase connection (anon key is public; RLS protects data)
 const SUPABASE_URL = 'https://dvgtfbkzctnhjlklrehs.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2Z3RmYmt6Y3RuaGpsa2xyZWhzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NDAyNTEsImV4cCI6MjEwODMxNjI1MX0.nI6UvLexXKfI2DCjDVHMdqsrbKQBtBz89xbL2Rk5aBY';
 
@@ -9,7 +9,9 @@ const productSelect = document.getElementById('product-select');
 const orderForm = document.getElementById('order-form');
 const orderMessage = document.getElementById('order-message');
 const submitBtn = document.getElementById('submit-btn');
+const filtersContainer = document.getElementById('category-filters');
 
+let allProducts = [];
 let isSubmitting = false;
 
 function getProductImages(product) {
@@ -27,61 +29,105 @@ function getProductImages(product) {
   return urls.filter(u => u.startsWith('http') || u.startsWith('images/') || u.startsWith('./') || u.startsWith('/'));
 }
 
+function stockLabel(stock) {
+  if (stock == null) return '';
+  if (stock <= 0) return '<span class="stock out">Out of stock</span>';
+  if (stock <= 3) return `<span class="stock low">Only ${stock} left</span>`;
+  return `<span class="stock">${stock} in stock</span>`;
+}
+
 function renderProductCard(product) {
   const images = getProductImages(product);
   const mainImg = images[0] || '';
-  const extraImgs = images.slice(1);
-  const imgHtml = images.length > 0
-    ? `<div class="image-gallery">${images.map((src, i) => `<img src="${src}" alt="${product.name || 'Toy'} view ${i+1}" class="${i===0 ? 'main-image' : 'extra-image'}" onerror="this.style.display='none'">`).join('')}</div>`
-    : '<p class="placeholder">No image</p>';
+  const imgHtml = mainImg
+    ? `<div class="img-wrap"><img src="${mainImg}" alt="${product.name || 'Toy'}" onerror="this.parentElement.style.background='#f0f4f8'"></div>`
+    : '<div class="img-wrap"><span style="font-size:2rem">\ud83e\uddf8</span></div>';
+
+  const age = (product.age_min != null || product.age_max != null)
+    ? `<div class="meta">Ages ${product.age_min ?? '?' }–${product.age_max ?? '?'}</div>`
+    : '';
+
+  const price = product.price != null ? product.price : 'N/A';
+  const currency = product.currency || 'BDT';
+
   return `
-    <div class="product-card" data-id="${product.id}">
+    <div class="product-card" data-id="${product.id}" data-category="${product.category_id || ''}">
       ${imgHtml}
       <h3>${product.name || 'Unnamed Toy'}</h3>
-      <p><strong>Price:</strong> ${product.price != null ? product.price : 'N/A'}</p>
+      <div class="price-badge">${currency} ${price}</div>
+      ${age}
       <p>${product.description || ''}</p>
+      ${stockLabel(product.stock)}
     </div>
   `;
+}
+
+function renderFilters(products) {
+  if (!filtersContainer) return;
+  const cats = new Map();
+  products.forEach(p => {
+    if (p.categories && p.categories.name) {
+      cats.set(p.category_id, p.categories.name);
+    }
+  });
+  if (cats.size === 0) {
+    filtersContainer.style.display = 'none';
+    return;
+  }
+  filtersContainer.innerHTML = '<button class="filter-btn active" data-cat="all">All Toys</button>' +
+    Array.from(cats.entries()).map(([id, name]) =>
+      `<button class="filter-btn" data-cat="${id}">${name}</button>`
+    ).join('');
+
+  filtersContainer.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      filtersContainer.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const cat = btn.dataset.cat;
+      const filtered = cat === 'all' ? allProducts : allProducts.filter(p => p.category_id === cat);
+      productList.innerHTML = filtered.map(renderProductCard).join('') || '<p class="placeholder">No toys in this category.</p>';
+    });
+  });
 }
 
 async function loadProducts() {
   productList.innerHTML = '<p class="placeholder">Loading toys...</p>';
   productSelect.innerHTML = '<option value="">Pick a toy</option>';
 
-  let products = [];
   try {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false });
+    // Try to join categories if the new schema exists
+    let query = supabase.from('products').select('*, categories(name, slug)').order('created_at', { ascending: false });
+    let { data, error } = await query;
+
+    // Fallback if join fails (old schema)
+    if (error) {
+      const fallback = await supabase.from('products').select('*').order('created_at', { ascending: false });
+      data = fallback.data;
+      error = fallback.error;
+    }
 
     if (error) {
-      console.error('Products load error:', error);
-      productList.innerHTML = '<p class="placeholder">Could not load toys. Check connection or add products in Supabase.</p>';
+      console.error(error);
+      productList.innerHTML = '<p class="placeholder">Could not load toys. Please try again later.</p>';
       return;
     }
 
-    products = data || [];
-  } catch (e) {
-    console.error(e);
-    productList.innerHTML = '<p class="placeholder">Could not load toys.</p>';
-    return;
+    allProducts = (data || []).filter(p => p.is_active !== false);
+    productList.innerHTML = allProducts.map(renderProductCard).join('') || '<p class="placeholder">No toys available right now.</p>';
+
+    allProducts.forEach(product => {
+      const option = document.createElement('option');
+      option.value = product.id;
+      option.textContent = product.name || `Product ${product.id}`;
+      option.dataset.price = product.price || 0;
+      productSelect.appendChild(option);
+    });
+
+    renderFilters(allProducts);
+  } catch (err) {
+    console.error(err);
+    productList.innerHTML = '<p class="placeholder">Something went wrong loading toys.</p>';
   }
-
-  if (products.length === 0) {
-    productList.innerHTML = '<p class="placeholder">No toys yet. Add some in the Supabase dashboard (products table).</p>';
-    return;
-  }
-
-  productList.innerHTML = products.map(renderProductCard).join('');
-
-  products.forEach(product => {
-    const option = document.createElement('option');
-    option.value = product.id;
-    option.textContent = product.name || `Product ${product.id}`;
-    option.dataset.price = product.price || 0;
-    productSelect.appendChild(option);
-  });
 }
 
 orderForm.addEventListener('submit', async (e) => {
@@ -99,6 +145,7 @@ orderForm.addEventListener('submit', async (e) => {
   if (!name || !phone || !address || !productId || qty < 1) {
     orderMessage.textContent = 'Please fill name, phone, address, select a toy, and quantity.';
     orderMessage.style.color = '#c2334f';
+    orderMessage.style.background = '#fff5f5';
     return;
   }
 
@@ -106,8 +153,8 @@ orderForm.addEventListener('submit', async (e) => {
   submitBtn.disabled = true;
   orderMessage.textContent = 'Sending order...';
   orderMessage.style.color = '#4aa3d8';
+  orderMessage.style.background = '#f0f8ff';
 
-  // Get selected product price for line total
   const selectedOption = productSelect.selectedOptions[0];
   const unitPrice = parseFloat(selectedOption?.dataset.price) || 0;
   const lineTotal = unitPrice * qty;
@@ -130,27 +177,24 @@ orderForm.addEventListener('submit', async (e) => {
     status: 'pending'
   };
 
-  const { data, error } = await supabase
-    .from('orders')
-    .insert([order])
-    .select();
+  const { data, error } = await supabase.from('orders').insert([order]).select();
 
   isSubmitting = false;
   submitBtn.disabled = false;
 
   if (error) {
     console.error('Order insert error:', error);
-    orderMessage.textContent = 'Failed to save order. Please try again. (Order not confirmed)';
+    orderMessage.textContent = 'Failed to save order. Please try again.';
     orderMessage.style.color = '#c2334f';
+    orderMessage.style.background = '#fff5f5';
     return;
   }
 
   orderMessage.textContent = 'Order saved! We will contact you to confirm. Order is pending until confirmed.';
   orderMessage.style.color = '#58cc02';
+  orderMessage.style.background = '#f0fff4';
   orderForm.reset();
-  // Reset quantity to 1
   orderForm.querySelector('[name="quantity"]').value = 1;
 });
 
-// Load products when page starts
 loadProducts();
