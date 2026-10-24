@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔒 Owner Dashboard - Fun Toys</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <nav>
+    <a href="index.html">🏠 Home</a>
+    <a href="shop.html">🌟 Shop</a>
+    <a href="for-you.html">💜 For You</a>
+    <a href="owner.html">🔒 Owner</a>
+  </nav>
+
+  <header>
+    <h1>🔒 Owner Dashboard</h1>
+    <p>Manage orders (sign in required)</p>
+  </header>
+
+  <main>
+    <section id="auth-section">
+      <h2>Sign In</h2>
+      <form id="login-form">
+        <label>
+          Email<br>
+          <input type="email" name="email" required>
+        </label>
+        <br>
+        <label>
+          Password<br>
+          <input type="password" name="password" required>
+        </label>
+        <br>
+        <button type="submit">Sign In</button>
+      </form>
+      <p id="auth-message"></p>
+    </section>
+
+    <section id="dashboard" style="display:none;">
+      <h2>Orders</h2>
+      <button id="signout-btn" class="btn secondary">Sign Out</button>
+      <div id="orders-list">
+        <p class="placeholder">Loading orders...</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Made with ❤️ for kids</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="owner.js"></script>
+</body>
+</html>
