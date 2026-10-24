@@ -18,19 +18,20 @@ body {
 nav {
   display: flex;
   justify-content: center;
-  gap: 16px;
+  gap: 12px;
   margin-bottom: 20px;
   background: white;
   padding: 12px;
   border-radius: 16px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  flex-wrap: wrap;
 }
 
 nav a {
   text-decoration: none;
   color: #4aa3d8;
   font-weight: 700;
-  padding: 8px 16px;
+  padding: 8px 14px;
   border-radius: 10px;
 }
 
@@ -86,22 +87,29 @@ h2 {
   transform: translateY(-4px);
 }
 
+.image-gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
 .product-card img {
-  max-width: 180px;
+  max-width: 160px;
   height: auto;
   border-radius: 12px;
   display: inline-block;
-  margin: 5px;
   vertical-align: top;
 }
 
 .product-card .main-image {
-  max-width: 220px;
+  max-width: 200px;
 }
 
 .product-card .extra-image {
-  max-width: 120px;
-  opacity: 0.9;
+  max-width: 100px;
+  opacity: 0.85;
+  cursor: pointer;
 }
 
 .product-card h3 {
@@ -115,7 +123,7 @@ label {
   font-weight: 700;
 }
 
-input, select {
+input, select, textarea {
   width: 100%;
   padding: 12px;
   font-size: 1rem;
@@ -125,7 +133,7 @@ input, select {
   font-family: inherit;
 }
 
-input:focus, select:focus {
+input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: #58cc02;
 }
@@ -147,6 +155,11 @@ button, .btn {
 
 button:hover, .btn:hover {
   background: #4caf00;
+}
+
+button:disabled {
+  background: #aaa;
+  cursor: not-allowed;
 }
 
 .btn.secondary {
@@ -180,5 +193,22 @@ footer {
 #order-message {
   margin-top: 16px;
   font-weight: 700;
-  color: #58cc02;
+}
+
+.order-item {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: #f9f9f9;
+}
+
+.order-item p {
+  margin: 4px 0;
+}
+
+@media (max-width: 600px) {
+  body { padding: 10px; }
+  .product-card img { max-width: 120px; }
+  .product-card .main-image { max-width: 160px; }
 }
