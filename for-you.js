@@ -6,40 +6,50 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const forYouList = document.getElementById('for-you-list');
 
-const featuredProduct = {
-  id: 'featured-moto',
-  name: 'Red Ducati Monster Style Motorcycle Toy',
-  price: '$19.99',
-  description: 'Awesome red and black toy motorcycle with cool details! Perfect for racing and play.',
-  image_url: 'images/moto1.jpg'
-};
+function getProductImages(product) {
+  const urls = [];
+  if (Array.isArray(product.image_urls) && product.image_urls.length > 0) {
+    product.image_urls.forEach(u => { if (u && typeof u === 'string' && u.trim()) urls.push(u.trim()); });
+  }
+  if (product.image_url && typeof product.image_url === 'string' && product.image_url.trim() && !urls.includes(product.image_url.trim())) {
+    urls.push(product.image_url.trim());
+  }
+  return urls;
+}
 
 async function loadForYou() {
-  let products = [featuredProduct];
+  forYouList.innerHTML = '<p class="placeholder">Loading special toys...</p>';
 
-  try {
-    const { data: supabaseProducts, error } = await supabase
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(2);
+  const { data: products, error } = await supabase
+    .from('products')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(3);
 
-    if (!error && supabaseProducts && supabaseProducts.length > 0) {
-      products = products.concat(supabaseProducts);
-    }
-  } catch (e) {
-    console.log('Using featured product');
+  if (error) {
+    forYouList.innerHTML = '<p class="placeholder">Could not load toys.</p>';
+    console.error(error);
+    return;
   }
 
-  forYouList.innerHTML = products.map(product => `
-    <div class="product-card">
-      ${product.image_url ? `<img src="${product.image_url}" alt="${product.name}">` : ''}
-      <h3>${product.name}</h3>
-      <p><strong>Price:</strong> ${product.price}</p>
-      <p>${product.description || ''}</p>
-      <a href="shop.html" class="btn" style="display:inline-block; margin-top:10px;">Order this</a>
-    </div>
-  `).join('');
+  if (!products || products.length === 0) {
+    forYouList.innerHTML = '<p class="placeholder">No toys yet. Add some in Supabase!</p>';
+    return;
+  }
+
+  forYouList.innerHTML = products.map(product => {
+    const images = getProductImages(product);
+    const img = images[0] ? `<img src="${images[0]}" alt="${product.name}" onerror="this.style.display='none'">` : '';
+    return `
+      <div class="product-card">
+        ${img}
+        <h3>${product.name || 'Toy'}</h3>
+        <p><strong>Price:</strong> ${product.price || 'N/A'}</p>
+        <p>${product.description || ''}</p>
+        <a href="shop.html" class="btn" style="display:inline-block; margin-top:10px;">Order this</a>
+      </div>
+    `;
+  }).join('');
 }
 
 loadForYou();
