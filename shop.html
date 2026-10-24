@@ -12,6 +12,7 @@
     <a href="index.html">🏠 Home</a>
     <a href="shop.html">🌟 Shop</a>
     <a href="for-you.html">💜 For You</a>
+    <a href="owner.html">🔒 Owner</a>
   </nav>
 
   <header>
@@ -32,12 +33,22 @@
       <form id="order-form">
         <label>
           Your name<br>
-          <input type="text" name="name" placeholder="What should we call you?" required>
+          <input type="text" name="customer_name" placeholder="What should we call you?" required>
         </label>
         <br>
         <label>
           Phone number<br>
-          <input type="tel" name="phone" placeholder="So we can reach you" required>
+          <input type="tel" name="customer_phone" placeholder="So we can reach you" required>
+        </label>
+        <br>
+        <label>
+          Delivery address<br>
+          <input type="text" name="customer_address" placeholder="Where to deliver?" required>
+        </label>
+        <br>
+        <label>
+          Delivery note (optional)<br>
+          <input type="text" name="delivery_note" placeholder="Any special instructions?">
         </label>
         <br>
         <label>
@@ -47,7 +58,12 @@
           </select>
         </label>
         <br>
-        <button type="submit">Order Now! 🚀</button>
+        <label>
+          Quantity<br>
+          <input type="number" name="quantity" value="1" min="1" required>
+        </label>
+        <br>
+        <button type="submit" id="submit-btn">Order Now! 🚀</button>
       </form>
       <p id="order-message"></p>
     </section>
